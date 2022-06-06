@@ -5,19 +5,30 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.gson.JsonObject
+import fr.epf.min1.projet_kotlin_4a.api.StationsService
 import fr.epf.min1.projet_kotlin_4a.databinding.ActivityMapsBinding
+import fr.epf.min1.projet_kotlin_4a.model.Station
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var mMap: GoogleMap
     private lateinit var binding: ActivityMapsBinding
+    private var listeStation: MutableList<Station> = mutableListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,6 +40,47 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
+
+        //create retrofit instance
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://velib-metropole-opendata.smoove.pro/opendata/Velib_Metropole/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+        val stationService = retrofit.create(StationsService::class.java)
+
+        //call api
+        val result = stationService.getStations()
+        result.enqueue(object : Callback<JsonObject> {
+            override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
+                if(response.isSuccessful) {
+                    val result = response.body()
+                    val data = result?.get("data")?.asJsonObject
+                    val station = data?.get("stations")?.asJsonArray
+                    if (station != null) {
+                        for (i in station) {
+                            val nouvelle_station = Station(
+                                i.asJsonObject.get("station_id").asInt,
+                                i.asJsonObject.get("name").asString,
+                                i.asJsonObject.get("lat").asDouble,
+                                i.asJsonObject.get("lon").asDouble,
+                                i.asJsonObject.get("capacity").asInt)
+                            listeStation.add(nouvelle_station)
+                            val position = LatLng(nouvelle_station.lat, nouvelle_station.lon)
+                            mMap.addMarker(MarkerOptions()
+                                .position(position)
+                                .title(nouvelle_station.name)
+                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)))
+                            mMap.moveCamera(CameraUpdateFactory.newLatLng(position))
+                        }
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<JsonObject>, t: Throwable) {
+                Toast.makeText(applicationContext, "Erreur serveur", Toast.LENGTH_SHORT).show()
+            }
+
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
