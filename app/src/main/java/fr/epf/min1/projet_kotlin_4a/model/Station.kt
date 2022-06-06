@@ -5,5 +5,7 @@ class Station(
     val name: String,
     val lat: Double,
     val lon: Double,
-    val capacity: Int
+    val capacity: Int,
+    val stationCode: String,
+    val nbVelo: Int
 )
