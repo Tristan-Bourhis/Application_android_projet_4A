@@ -41,6 +41,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
+
         //create retrofit instance
         val retrofit = Retrofit.Builder()
             .baseUrl("https://velib-metropole-opendata.smoove.pro/opendata/Velib_Metropole/")
@@ -53,6 +54,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         result.enqueue(object : Callback<JsonObject> {
             override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
                 if(response.isSuccessful) {
+                    Toast.makeText(applicationContext, "Erreur serveur", Toast.LENGTH_SHORT).show()
                     val result = response.body()
                     val data = result?.get("data")?.asJsonObject
                     val station = data?.get("stations")?.asJsonArray
@@ -75,7 +77,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                                 .position(position)
                                 .title(nouvelleStation.name)
                                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
-                                //.snippet(  "${nouvelleStation.nbVelo} vélo(s) disponible(s)")
+                                .snippet(  "${nouvelleStation.nbVelo} vélo(s) disponible(s)")
                             )
                             mMap.moveCamera(CameraUpdateFactory.newLatLng(position))
                         }
@@ -85,10 +87,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             override fun onFailure(call: Call<JsonObject>, t: Throwable) {
                 Toast.makeText(applicationContext, "Erreur serveur", Toast.LENGTH_SHORT).show()
             }
-
         })
     }
-
+/*
     private fun getNombreVeloDisponible(stationCode: String): Int {
         var nbVelo = 0
         //create retrofit instance
@@ -121,7 +122,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         })
         return nbVelo;
     }
-
+*/
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.maps, menu)
         return super.onCreateOptionsMenu(menu)

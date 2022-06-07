@@ -9,6 +9,6 @@ interface StationsService {
     @GET("station_information.json")
     fun getStations() : Call<JsonObject>
 
-    @GET("station_status.json")
-    fun getStatus(): Call<JsonObject>
+    /*@GET("station_status.json")
+    fun getStatus(): Call<JsonObject>*/
 }
