@@ -48,39 +48,70 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         val stationService = retrofit.create(StationsService::class.java)
+        val statusService = retrofit.create(StationsService::class.java)
 
-        //call api
+        //cal api
+        val resultStatus = statusService.getStatus()
         val result = stationService.getStations()
         result.enqueue(object : Callback<JsonObject> {
             override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
                 if(response.isSuccessful) {
-                    Toast.makeText(applicationContext, "Erreur serveur", Toast.LENGTH_SHORT).show()
                     val result = response.body()
                     val data = result?.get("data")?.asJsonObject
                     val station = data?.get("stations")?.asJsonArray
                     if (station != null) {
-                        for (i in station) {
-                            val stationCode = i.asJsonObject.get("stationCode").asString
-                            val nouvelleStation = Station(
-                                i.asJsonObject.get("station_id").asInt,
-                                i.asJsonObject.get("name").asString,
-                                i.asJsonObject.get("lat").asDouble,
-                                i.asJsonObject.get("lon").asDouble,
-                                i.asJsonObject.get("capacity").asInt,
-                                stationCode,
-                                3
-                                //getNombreVeloDisponible(stationCode)
-                            )
-                            listeStation.add(nouvelleStation)
-                            val position = LatLng(nouvelleStation.lat, nouvelleStation.lon)
-                            mMap.addMarker(MarkerOptions()
-                                .position(position)
-                                .title(nouvelleStation.name)
-                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
-                                .snippet(  "${nouvelleStation.nbVelo} vélo(s) disponible(s)")
-                            )
-                            mMap.moveCamera(CameraUpdateFactory.newLatLng(position))
-                        }
+                        resultStatus.enqueue(object : Callback<JsonObject>{
+                            override fun onResponse(
+                                call: Call<JsonObject>,
+                                response: Response<JsonObject>
+                            ) {
+                                if (response.isSuccessful) {
+                                    val resultStatus = response.body()
+                                    val dataStatus = resultStatus?.get("data")?.asJsonObject
+                                    val stationStatus = dataStatus?.get("stations")?.asJsonArray
+                                    for (i in station) {
+                                        val stationCode = i.asJsonObject.get("stationCode").asString
+                                        var nbVelo = 0
+                                        if (stationStatus != null) {
+                                            for (j in stationStatus) {
+                                                if (stationCode == j.asJsonObject.get("stationCode").asString) {
+                                                    nbVelo = j.asJsonObject.get("numBikesAvailable").asInt
+                                                }
+                                            }
+                                        }
+                                        val nouvelleStation = Station(
+                                            i.asJsonObject.get("station_id").asInt,
+                                            i.asJsonObject.get("name").asString,
+                                            i.asJsonObject.get("lat").asDouble,
+                                            i.asJsonObject.get("lon").asDouble,
+                                            i.asJsonObject.get("capacity").asInt,
+                                            stationCode,
+                                            nbVelo
+                                        )
+                                        listeStation.add(nouvelleStation)
+                                        val position =
+                                            LatLng(nouvelleStation.lat, nouvelleStation.lon)
+                                        mMap.addMarker(
+                                            MarkerOptions()
+                                                .position(position)
+                                                .title(nouvelleStation.name)
+                                                .icon(
+                                                    BitmapDescriptorFactory.defaultMarker(
+                                                        BitmapDescriptorFactory.HUE_GREEN
+                                                    )
+                                                )
+                                                .snippet("${nouvelleStation.nbVelo} vélo(s) disponible(s)")
+                                        )
+                                        mMap.moveCamera(CameraUpdateFactory.newLatLng(position))
+                                    }
+                                }
+                            }
+
+                            override fun onFailure(call: Call<JsonObject>, t: Throwable) {
+                                Toast.makeText(applicationContext, "Erreur serveur", Toast.LENGTH_SHORT).show()
+                            }
+
+                        })
                     }
                 }
             }
@@ -89,40 +120,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         })
     }
-/*
-    private fun getNombreVeloDisponible(stationCode: String): Int {
-        var nbVelo = 0
-        //create retrofit instance
-        val retrofit = Retrofit.Builder()
-            .baseUrl("https://velib-metropole-opendata.smoove.pro/opendata/Velib_Metropole/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-        val stationService = retrofit.create(StationsService::class.java)
 
-        //call api
-        val result = stationService.getStatus()
-        result.enqueue(object : Callback<JsonObject> {
-            override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
-                if(response.isSuccessful) {
-                    val result = response.body()
-                    val data = result?.get("data")?.asJsonObject
-                    val station = data?.get("stations")?.asJsonArray
-                    if (station != null) {
-                        for (i in station) {
-                            if (stationCode ==  i.asJsonObject.get("stationCode").asString) {
-                                nbVelo = i.asJsonObject.get("num_bikes_available").asInt
-                            }
-                        }
-                    }
-                }
-            }
-            override fun onFailure(call: Call<JsonObject>, t: Throwable) {
-                Toast.makeText(applicationContext, "Erreur serveur ici", Toast.LENGTH_SHORT).show()
-            }
-        })
-        return nbVelo;
-    }
-*/
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.maps, menu)
         return super.onCreateOptionsMenu(menu)
