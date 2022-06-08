@@ -76,6 +76,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
                 intent.putExtra("name", i.name)
                 intent.putExtra("capacity", i.capacity)
                 intent.putExtra("nbVelo", i.nbVelo)
+                intent.putExtra("ebike", i.ebike)
             }
         }
         startActivity(intent)
@@ -112,11 +113,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
                                     for (i in station) {
                                         val stationCode = i.asJsonObject.get("stationCode").asString
                                         var nbVelo = 0
-                                        //var nbVeloElectrique = 0
+                                        var ebike = 0
                                         if (stationStatus != null) {
                                             for (j in stationStatus) {
                                                 if (stationCode == j.asJsonObject.get("stationCode").asString) {
                                                     nbVelo = j.asJsonObject.get("numBikesAvailable").asInt
+                                                    val type = j.asJsonObject.get("num_bikes_available_types").asJsonArray
+                                                    val typeElectrique = type.get(1).asJsonObject
+                                                    ebike = typeElectrique.get("ebike").asInt
                                                 }
                                             }
                                         }
@@ -127,7 +131,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
                                             i.asJsonObject.get("lon").asDouble,
                                             i.asJsonObject.get("capacity").asInt,
                                             stationCode,
-                                            nbVelo
+                                            nbVelo,
+                                            ebike
                                         )
                                         listeStation.add(nouvelleStation)
                                         val position =

@@ -24,8 +24,14 @@ class DetailActivity : AppCompatActivity() {
         capacityTextView.text = capacity.toString()
 
         val nbVelo = intent.getIntExtra("nbVelo", -1)
+        val ebike = intent.getIntExtra("ebike", -1)
+        val mecanique = nbVelo - ebike
+
         val nbVeloMecaniqueTextView = findViewById<TextView>(R.id.nbVeloMecaniqueTextView)
-        nbVeloMecaniqueTextView.text = nbVelo.toString()
+        nbVeloMecaniqueTextView.text = mecanique.toString()
+
+        val nbEbikeTextView = findViewById<TextView>(R.id.nbEbikeTextView)
+        nbEbikeTextView.text = ebike.toString()
 
         val nbPlace = capacity - nbVelo
         val nbPlaceTextView = findViewById<TextView>(R.id.nbPlaceTextView)

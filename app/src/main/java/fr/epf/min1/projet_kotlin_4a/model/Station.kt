@@ -7,5 +7,6 @@ class Station(
     val lon: Double,
     val capacity: Int,
     val stationCode: String,
-    val nbVelo: Int
+    val nbVelo: Int,
+    val ebike: Int
 )
