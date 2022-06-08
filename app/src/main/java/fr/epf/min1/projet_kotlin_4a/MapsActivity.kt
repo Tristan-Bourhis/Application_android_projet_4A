@@ -6,13 +6,13 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
-
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.gson.JsonObject
 import fr.epf.min1.projet_kotlin_4a.api.StationsService
@@ -24,7 +24,7 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
+class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener {
 
     private lateinit var mMap: GoogleMap
     private lateinit var binding: ActivityMapsBinding
@@ -41,7 +41,47 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
+        api()
+    }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.maps, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+            R.id.station_favorite_home_button -> {
+                startActivity(Intent(this, StationFavoritesActivity::class.java))
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    override fun onMapReady(googleMap: GoogleMap) {
+        mMap = googleMap
+
+        mMap.setOnInfoWindowClickListener(this)
+
+        // Add a marker in Sydney and move the camera
+        val paris = LatLng(48.8, 2.3)
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(paris, 16.0f))
+    }
+
+    override fun onInfoWindowClick(marker: Marker) {
+        val intent = Intent(this, DetailActivity::class.java)
+        for (i in listeStation) {
+            val positionStation = LatLng(i.lat, i.lon)
+            if (marker.position == positionStation) {
+                intent.putExtra("name", i.name)
+                intent.putExtra("capacity", i.capacity)
+                intent.putExtra("nbVelo", i.nbVelo)
+            }
+        }
+        startActivity(intent)
+    }
+
+    private fun api() {
         //create retrofit instance
         val retrofit = Retrofit.Builder()
             .baseUrl("https://velib-metropole-opendata.smoove.pro/opendata/Velib_Metropole/")
@@ -50,7 +90,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         val stationService = retrofit.create(StationsService::class.java)
         val statusService = retrofit.create(StationsService::class.java)
 
-        //cal api
+        //call api
         val resultStatus = statusService.getStatus()
         val result = stationService.getStations()
         result.enqueue(object : Callback<JsonObject> {
@@ -72,6 +112,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                                     for (i in station) {
                                         val stationCode = i.asJsonObject.get("stationCode").asString
                                         var nbVelo = 0
+                                        //var nbVeloElectrique = 0
                                         if (stationStatus != null) {
                                             for (j in stationStatus) {
                                                 if (stationCode == j.asJsonObject.get("stationCode").asString) {
@@ -91,18 +132,31 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                                         listeStation.add(nouvelleStation)
                                         val position =
                                             LatLng(nouvelleStation.lat, nouvelleStation.lon)
-                                        mMap.addMarker(
-                                            MarkerOptions()
-                                                .position(position)
-                                                .title(nouvelleStation.name)
-                                                .icon(
-                                                    BitmapDescriptorFactory.defaultMarker(
-                                                        BitmapDescriptorFactory.HUE_GREEN
+                                        if(nbVelo!=0) {
+                                            mMap.addMarker(
+                                                MarkerOptions()
+                                                    .position(position)
+                                                    .title(nouvelleStation.name)
+                                                    .icon(
+                                                        BitmapDescriptorFactory.defaultMarker(
+                                                            BitmapDescriptorFactory.HUE_GREEN
+                                                        )
                                                     )
-                                                )
-                                                .snippet("${nouvelleStation.nbVelo} vélo(s) disponible(s)")
-                                        )
-                                        mMap.moveCamera(CameraUpdateFactory.newLatLng(position))
+                                                    .snippet("${nouvelleStation.nbVelo} vélo(s) disponible(s)")
+                                            )
+                                        }else {
+                                            mMap.addMarker(
+                                                MarkerOptions()
+                                                    .position(position)
+                                                    .title(nouvelleStation.name)
+                                                    .icon(
+                                                        BitmapDescriptorFactory.defaultMarker(
+                                                            BitmapDescriptorFactory.HUE_RED
+                                                        )
+                                                    )
+                                                    .snippet("${nouvelleStation.nbVelo} vélo(s) disponible(s)")
+                                            )
+                                        }
                                     }
                                 }
                             }
@@ -120,28 +174,5 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         })
     }
-
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.maps, menu)
-        return super.onCreateOptionsMenu(menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val id = item.itemId
-        when(id){
-            R.id.station_favorite_home_button -> {
-                startActivity(Intent(this, StationFavoritesActivity::class.java))
-            }
-        }
-        return super.onOptionsItemSelected(item)
-    }
-
-    override fun onMapReady(googleMap: GoogleMap) {
-        mMap = googleMap
-
-        // Add a marker in Sydney and move the camera
-        val paris = LatLng(48.8, 2.3)
-        mMap.addMarker(MarkerOptions().position(paris).title("Marker in Paris"))
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(paris))
-    }
 }
+
