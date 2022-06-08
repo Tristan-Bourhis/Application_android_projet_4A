@@ -3,10 +3,12 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/trist/AndroidStudioProjects/Projet_kotlin_4A/app/src/main/res/drawable/ic_baseline_favorite_24.xml" value="0.2425" />
         <entry key="..\:/Users/trist/AndroidStudioProjects/Projet_kotlin_4A/app/src/main/res/layout/activity_detail.xml" value="0.21822916666666667" />
         <entry key="..\:/Users/trist/AndroidStudioProjects/Projet_kotlin_4A/app/src/main/res/layout/activity_home.xml" value="0.3138586956521739" />
         <entry key="..\:/Users/trist/AndroidStudioProjects/Projet_kotlin_4A/app/src/main/res/layout/activity_maps.xml" value="0.2890625" />
         <entry key="..\:/Users/trist/AndroidStudioProjects/Projet_kotlin_4A/app/src/main/res/layout/activity_station_favorites.xml" value="0.2890625" />
+        <entry key="..\:/Users/trist/AndroidStudioProjects/Projet_kotlin_4A/app/src/main/res/menu/detail.xml" value="0.25833333333333336" />
         <entry key="..\:/Users/trist/AndroidStudioProjects/Projet_kotlin_4A/app/src/main/res/menu/maps.xml" value="0.36666666666666664" />
       </map>
     </option>
