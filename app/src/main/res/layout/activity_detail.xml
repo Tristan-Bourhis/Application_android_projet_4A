@@ -157,7 +157,7 @@
         app:srcCompat="@drawable/ic_baseline_pedal_bike_24" />
 
     <TextView
-        android:id="@+id/textView13"
+        android:id="@+id/TextView13"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="156dp"
@@ -178,7 +178,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
-        android:id="@+id/imageButton"
+        android:id="@+id/favoriteImageButton"
         android:layout_width="65dp"
         android:layout_height="50dp"
         android:layout_marginTop="12dp"

@@ -80,6 +80,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
                 intent.putExtra("capacity", i.capacity)
                 intent.putExtra("nbVelo", i.nbVelo)
                 intent.putExtra("ebike", i.ebike)
+                intent.putExtra("stationCode", i.stationCode)
             }
         }
         startActivity(intent)

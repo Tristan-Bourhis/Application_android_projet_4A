@@ -23,4 +23,5 @@ class StationFavoritesActivity : AppCompatActivity() {
         }
 
     }
+
 }
