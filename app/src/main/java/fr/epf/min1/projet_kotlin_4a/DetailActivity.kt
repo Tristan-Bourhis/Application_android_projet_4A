@@ -1,7 +1,5 @@
 package fr.epf.min1.projet_kotlin_4a
 
-import android.content.ClipData
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
@@ -14,7 +12,11 @@ class DetailActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detail)
 
-        //verifier si la station est en favoris pour init l'item du menu
+        //verifier si la station est en favoris pour init l'item du menu ou changer item par button
+
+        val station_id = intent.getIntExtra("station_id", -1)
+        val station_idTextView = findViewById<TextView>(R.id.station_idTextView)
+        station_idTextView.text = station_id.toString()
 
         val nameTextView = findViewById<TextView>(R.id.detailNameTextView)
         nameTextView.text = intent.getStringExtra("name")
@@ -36,21 +38,5 @@ class DetailActivity : AppCompatActivity() {
         val nbPlace = capacity - nbVelo
         val nbPlaceTextView = findViewById<TextView>(R.id.nbPlaceTextView)
         nbPlaceTextView.text = nbPlace.toString()
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.detail, menu)
-        return super.onCreateOptionsMenu(menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId){
-            R.id.favorite_detail_button -> {
-                //TODO
-                //fill heart
-                //add to favorite
-            }
-        }
-        return super.onOptionsItemSelected(item)
     }
 }

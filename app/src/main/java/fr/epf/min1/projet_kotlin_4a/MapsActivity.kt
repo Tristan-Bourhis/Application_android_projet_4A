@@ -36,10 +36,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
+
 
         api()
     }
@@ -73,6 +75,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
         for (i in listeStation) {
             val positionStation = LatLng(i.lat, i.lon)
             if (marker.position == positionStation) {
+                intent.putExtra("station_id", i.station_id)
                 intent.putExtra("name", i.name)
                 intent.putExtra("capacity", i.capacity)
                 intent.putExtra("nbVelo", i.nbVelo)
@@ -97,6 +100,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
         result.enqueue(object : Callback<JsonObject> {
             override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
                 if(response.isSuccessful) {
+                    Toast.makeText(applicationContext, "Chargement des données", Toast.LENGTH_SHORT).show()
                     val result = response.body()
                     val data = result?.get("data")?.asJsonObject
                     val station = data?.get("stations")?.asJsonArray
