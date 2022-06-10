@@ -82,11 +82,13 @@ class DetailActivity : AppCompatActivity() {
             runBlocking {
                 if (favorite) {
                     favoriteImageButton.setImageResource(R.drawable.ic_baseline_favorite_border_24)
-                    Toast.makeText(applicationContext, "Supprimé aux favoris", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(applicationContext, "Supprimé des favoris", Toast.LENGTH_SHORT).show()
+                    favorite = false
                     stationDao.delete(station)
                 }else {
                     favoriteImageButton.setImageResource(R.drawable.ic_baseline_favorite_24)
                     Toast.makeText(applicationContext, "Ajouté aux favoris", Toast.LENGTH_SHORT).show()
+                    favorite = true
                     stationDao.insert(station)
                 }
             }
