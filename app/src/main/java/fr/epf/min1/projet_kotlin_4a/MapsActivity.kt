@@ -1,11 +1,15 @@
 package fr.epf.min1.projet_kotlin_4a
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.location.Location
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -23,6 +27,10 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.tasks.OnSuccessListener
+import com.google.android.gms.tasks.Task
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener {
 
@@ -30,6 +38,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
     private lateinit var binding: ActivityMapsBinding
     private var listeStation: MutableList<Station> = mutableListOf()
     private var swap: Boolean = false
+    private lateinit var client: FusedLocationProviderClient
+    private lateinit var currentLocation: Location
+    private var REQUEST_CODE = 101
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,6 +48,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        client = LocationServices.getFusedLocationProviderClient(this);
+        fetchLocation();
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
@@ -79,10 +92,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
         mMap = googleMap
 
         mMap.setOnInfoWindowClickListener(this)
-
+/*
         // Add a marker in Sydney and move the camera
         val paris = LatLng(48.8, 2.3)
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(paris, 16.0f))
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(paris, 16.0f))*/
     }
 
     override fun onInfoWindowClick(marker: Marker) {
@@ -224,6 +237,48 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
                 Toast.makeText(applicationContext, "Erreur serveur", Toast.LENGTH_SHORT).show()
             }
         })
+    }
+
+    private fun fetchLocation() {
+        if (ActivityCompat.checkSelfPermission(
+                this, Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this, Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                REQUEST_CODE
+            )
+            return
+        }
+        val task: Task<Location> = client.getLastLocation()
+        task.addOnSuccessListener(OnSuccessListener<Any?> { location ->
+            if (location != null) {
+                currentLocation = location as Location
+                val position = LatLng(currentLocation.latitude, currentLocation.longitude)
+                mMap.addMarker(MarkerOptions().position(position).title("Ma position").icon(
+                    BitmapDescriptorFactory.defaultMarker(
+                        BitmapDescriptorFactory.HUE_AZURE
+                    )
+                ))
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 16.0f))
+            }
+        })
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String?>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when (requestCode) {
+            REQUEST_CODE -> if (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                fetchLocation()
+            }
+        }
     }
 }
 
