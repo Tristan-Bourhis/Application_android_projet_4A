@@ -1,4 +1,13 @@
 <resources>
-    <string name="app_name">Projet_kotlin_4A</string>
-    <string name="title_activity_maps">Projet_4A</string>
+    <string name="app_name">BOURHIS_DIOP_app</string>
+    <string name="title_activity_maps">BOURHIS_DIOP_app</string>
+    <string name="title_activity_favorite">Favoris</string>
+    <string name="title_activity_detail">Détails</string>
+    <string name="detail_text_view_nb_de_place">Nombre de place(s) disponible(s)</string>
+    <string name="detail_text_view_nom">Nom de la station :</string>
+    <string name="detail_text_view_capacity">Capacité de la station :</string>
+    <string name="detail_text_view_nb_disponible">Nombre de vélo(s) disponible(s) :</string>
+    <string name="detail_text_view_mecanique">-mécanique</string>
+    <string name="detail_text_view_electrique">-électrique</string>
+    <string name="detail_text_view_id">ID station :</string>
 </resources>

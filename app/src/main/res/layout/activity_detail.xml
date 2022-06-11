@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#FFFFFF"
     tools:context=".DetailActivity">
 
     <TextView
@@ -12,7 +13,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="156dp"
         android:layout_marginTop="32dp"
-        android:text="Nom de la station :"
+        android:text="@string/detail_text_view_nom"
+        android:textColor="#000000"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -33,7 +35,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="156dp"
         android:layout_marginTop="100dp"
-        android:text="Capacité de la station :"
+        android:text="@string/detail_text_view_capacity"
+        android:textColor="#000000"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -43,7 +46,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="28dp"
         android:layout_marginTop="168dp"
-        android:text="Nombre de vélo(s) disponible(s) :"
+        android:text="@string/detail_text_view_nb_disponible"
+        android:textColor="#000000"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -65,7 +69,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="156dp"
         android:layout_marginTop="204dp"
-        android:text="-mécanique"
+        android:text="@string/detail_text_view_mecanique"
+        android:textColor="#000000"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -87,7 +92,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="156dp"
         android:layout_marginTop="256dp"
-        android:text="-électrique"
+        android:text="@string/detail_text_view_electrique"
+        android:textColor="#000000"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -109,7 +115,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="28dp"
         android:layout_marginTop="352dp"
-        android:text="Nombre de place(s) disponible(s)"
+        android:text="@string/detail_text_view_nb_de_place"
+        android:textColor="#000000"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -118,7 +125,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="352dp"
-        android:text="nbPlaceTextView"
+        android:text="TextView"
         android:textColor="#173EC8"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/textView11"
@@ -129,10 +136,9 @@
         android:layout_width="115dp"
         android:layout_height="135dp"
         android:layout_marginStart="28dp"
-        android:layout_marginTop="24dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_baseline_directions_bike_24" />
+        app:srcCompat="@drawable/ic_baseline_directions_bike_24"
+        tools:layout_editor_absoluteY="24dp" />
 
     <ImageView
         android:id="@+id/imageView2"
@@ -162,7 +168,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="156dp"
         android:layout_marginTop="132dp"
-        android:text="ID station :"
+        android:text="@string/detail_text_view_id"
+        android:textColor="#000000"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -182,7 +189,7 @@
         android:layout_width="65dp"
         android:layout_height="50dp"
         android:layout_marginTop="12dp"
-        android:layout_marginEnd="32dp"
+        android:layout_marginEnd="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_baseline_favorite_border_24" />

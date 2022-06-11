@@ -17,10 +17,13 @@
         android:theme="@style/Theme.Projet_kotlin_4A">
         <activity
             android:name=".DetailActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:label="@string/title_activity_detail"/>
         <activity
             android:name=".StationFavoritesActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:label="@string/title_activity_favorite"/>
+
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

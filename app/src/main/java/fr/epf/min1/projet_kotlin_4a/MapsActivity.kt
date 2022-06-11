@@ -29,6 +29,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
     private lateinit var mMap: GoogleMap
     private lateinit var binding: ActivityMapsBinding
     private var listeStation: MutableList<Station> = mutableListOf()
+    private var swap: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,7 +43,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
-
+        swap = intent.getBooleanExtra("swap", false)
         api()
     }
 
@@ -55,6 +56,20 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
         when(item.itemId){
             R.id.station_favorite_home_button -> {
                 startActivity(Intent(this, StationFavoritesActivity::class.java))
+            }
+            R.id.refresh_home_button -> {
+                finish()
+                startActivity(intent)
+            }
+            R.id.swap_home_button -> {
+                finish()
+                val intent = Intent(this, MapsActivity::class.java)
+                if (swap){
+                    intent.putExtra("swap", false)
+                }else {
+                    intent.putExtra("swap", true)
+                }
+                startActivity(intent)
             }
         }
         return super.onOptionsItemSelected(item)
@@ -129,12 +144,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
                                                 }
                                             }
                                         }
+                                        val capacity = i.asJsonObject.get("capacity").asInt
                                         val nouvelleStation = Station(
                                             i.asJsonObject.get("station_id").asInt,
                                             i.asJsonObject.get("name").asString,
                                             i.asJsonObject.get("lat").asDouble,
                                             i.asJsonObject.get("lon").asDouble,
-                                            i.asJsonObject.get("capacity").asInt,
+                                            capacity,
                                             stationCode,
                                             nbVelo,
                                             ebike
@@ -142,7 +158,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
                                         listeStation.add(nouvelleStation)
                                         val position =
                                             LatLng(nouvelleStation.lat, nouvelleStation.lon)
-                                        if(nbVelo!=0) {
+                                        val nbPlaceDisponible = capacity - nbVelo
+                                        if(nbVelo!=0 && !swap) {
                                             mMap.addMarker(
                                                 MarkerOptions()
                                                     .position(position)
@@ -154,7 +171,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
                                                     )
                                                     .snippet("${nouvelleStation.nbVelo} vélo(s) disponible(s)")
                                             )
-                                        }else {
+                                        }else if (nbVelo==0 && !swap){
                                             mMap.addMarker(
                                                 MarkerOptions()
                                                     .position(position)
@@ -165,6 +182,30 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnInfoWi
                                                         )
                                                     )
                                                     .snippet("${nouvelleStation.nbVelo} vélo(s) disponible(s)")
+                                            )
+                                        }else if (nbPlaceDisponible!=0 && swap) {
+                                            mMap.addMarker(
+                                                MarkerOptions()
+                                                    .position(position)
+                                                    .title(nouvelleStation.name)
+                                                    .icon(
+                                                        BitmapDescriptorFactory.defaultMarker(
+                                                            BitmapDescriptorFactory.HUE_GREEN
+                                                        )
+                                                    )
+                                                    .snippet("${nbPlaceDisponible} place(s) disponible(s)")
+                                            )
+                                        }else {
+                                            mMap.addMarker(
+                                                MarkerOptions()
+                                                    .position(position)
+                                                    .title(nouvelleStation.name)
+                                                    .icon(
+                                                        BitmapDescriptorFactory.defaultMarker(
+                                                            BitmapDescriptorFactory.HUE_RED
+                                                        )
+                                                    )
+                                                    .snippet("0 place disponible")
                                             )
                                         }
                                     }
